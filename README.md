@@ -292,3 +292,16 @@ Developed by **Ashish**
 - [ImageKit](https://imagekit.io/) for media optimization and delivery
 - [Video.js](https://videojs.com/) for the video player
 - [Blender Foundation](https://www.blender.org/) for sample videos
+
+
+
+
+
+
+
+   
+
+   
+
+
+
