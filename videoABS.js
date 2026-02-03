@@ -155,7 +155,6 @@ const mediaData = {
 // ------------ DOM refs ------------
 
 const videoContainer = document.querySelector("#video-container");
-const categoryButtons = document.querySelectorAll(".category");
 
 const IK_URL_ENDPOINT = "https://ik.imagekit.io/Kashish12345/app";
 
@@ -194,7 +193,7 @@ function buildImageKitHlsUrl(video) {
    Init a Video.js player for one card
 ---------------------------- */
 
-function initCardPlayer(videoEl, video, index) {
+function initCardPlayer(videoEl, video) {
   // Try HLS via ImageKit first
   const hlsUrl = buildImageKitHlsUrl(video);
   const fallbackUrl = video.sources?.[0] || "";
@@ -247,13 +246,15 @@ function initCardPlayer(videoEl, video, index) {
   //   player.controlBar.addChild("SourceMenuButton", {});
   // });
 
-  cardPlayers.set(videoEl.id, player);
+  // Fallback to MP4 if HLS fails
+  player.on("error", () => {
+    const fallbackUrl = video.sources?.[0];
+    if (fallbackUrl && !player.src().includes(".mp4")) {
+      player.src({ src: fallbackUrl, type: "video/mp4" });
+    }
+  });
 
-  if (index === 0) {
-    player.play().catch((err) => {
-      //console.warn("Autoplay blocked for first card:", err);
-    });
-  }
+  cardPlayers.set(videoEl.id, player);
 }
 
 /* ---------------------------
@@ -315,6 +316,10 @@ function createVideoCard(video, index) {
 ---------------------------- */
 
 function renderAllVideos() {
+  // Dispose existing players to prevent memory leaks
+  cardPlayers.forEach((player) => player.dispose());
+  cardPlayers.clear();
+
   videoContainer.innerHTML = "";
 
   const moviesCategory =
@@ -328,22 +333,14 @@ function renderAllVideos() {
     videoContainer.append(card);
 
     // Now the <video> is in the DOM – init Video.js on it
-    initCardPlayer(card._videoEl, video, index);
+    initCardPlayer(card._videoEl, video);
   });
 }
 
 /* ---------------------------
-   Init + category UI
+   Init
 ---------------------------- */
 
 document.addEventListener("DOMContentLoaded", () => {
   renderAllVideos();
-});
-
-categoryButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    categoryButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    // later you can filter mediaData based on btn.textContent
-  });
 });

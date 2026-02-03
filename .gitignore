@@ -1,0 +1,8 @@
+# API keys - never commit
+config.js
+
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
