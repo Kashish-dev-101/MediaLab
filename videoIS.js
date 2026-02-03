@@ -10,7 +10,7 @@ const mediaData = {
           title: "Big Buck Bunny",
           subtitle: "By Blender Foundation",
           description:
-            "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore!\n\nLicensed under Creative Commons Attribution\nhttp://www.bigbuckbunny.org",
+            "Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself.",
           thumb:
             "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
           sources: [
@@ -115,38 +115,6 @@ const mediaData = {
             "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
           ],
         },
-        {
-          title: "Volkswagen GTI Review",
-          subtitle: "By Garage419",
-          description:
-            "Will the Volkswagen GTI beat the Mazdaspeed3's lap time? Watch to find out.",
-          thumb:
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
-          sources: [
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
-          ],
-        },
-        {
-          title: "We Are Going On Bullrun",
-          subtitle: "By Garage419",
-          description:
-            "Daily road-trip videos from the 2010 Bullrun Live Rally in a 2011 Shelby GT500.",
-          thumb:
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
-          sources: [
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-          ],
-        },
-        {
-          title: "What Car Can You Get For A Grand?",
-          subtitle: "By Garage419",
-          description: "Testing how far $1,000 can go when buying a used car.",
-          thumb:
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
-          sources: [
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-          ],
-        },
       ],
     },
   ],
@@ -163,7 +131,32 @@ const IK_URL_ENDPOINT = "https://ik.imagekit.io/Kashish12345/app";
 const videoContainer = document.querySelector("#video-container");
 
 /* -------------------------
-   IMAGEKIT URL BUILDERS
+   INTERSECTION OBSERVER FOR AUTOPLAY
+----------------------------*/
+const observerOptions = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.6, // 60% visible to trigger
+};
+
+const videoObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    const video = entry.target;
+
+    if (entry.isIntersecting) {
+      // Video is in viewport - play it
+      video.play().catch(() => {
+        // Autoplay blocked - user interaction required
+      });
+    } else {
+      // Video left viewport - pause it
+      video.pause();
+    }
+  });
+}, observerOptions);
+
+/* -------------------------
+   IMAGEKIT URL BUILDER
 ----------------------------*/
 function buildImageKitProgressiveUrl(video) {
   const sourceUrl = video.sources[0];
@@ -179,9 +172,9 @@ function buildImageKitProgressiveUrl(video) {
 }
 
 /* -------------------------
-   CARD CREATION (PROGRESSIVE)
+   CARD CREATION (INSTASTREAM)
 ----------------------------*/
-function createProgressiveCard(video) {
+function createInstaCard(video) {
   const card = document.createElement("article");
   card.classList.add("video-card");
 
@@ -191,11 +184,17 @@ function createProgressiveCard(video) {
   const videoEl = document.createElement("video");
   videoEl.classList.add("video-player");
   videoEl.controls = true;
-  videoEl.preload = "none";
+  videoEl.muted = true; // Muted for autoplay to work
+  videoEl.loop = true; // Loop like Instagram
+  videoEl.playsInline = true;
+  videoEl.preload = "metadata";
 
   videoEl.src = buildImageKitProgressiveUrl(video);
 
   if (video.thumb) videoEl.poster = video.thumb;
+
+  // Observe this video for autoplay
+  videoObserver.observe(videoEl);
 
   wrapper.append(videoEl);
   card.append(wrapper, buildInfo(video));
@@ -211,6 +210,7 @@ function buildInfo(video) {
   info.classList.add("video-info");
 
   const titleEl = document.createElement("h2");
+  titleEl.classList.add("video-title");
   titleEl.textContent = video.title;
 
   const meta = document.createElement("div");
@@ -231,18 +231,18 @@ function buildInfo(video) {
 }
 
 /* -------------------------
-   RENDER MODES
+   RENDER
 ----------------------------*/
-function renderProgressiveMode() {
+function renderInstaMode() {
   videoContainer.innerHTML = "";
   const videos = mediaData.categories[0].videos;
 
-  videos.forEach((v) => videoContainer.append(createProgressiveCard(v)));
+  videos.forEach((v) => videoContainer.append(createInstaCard(v)));
 }
 
 /* -------------------------
    INIT
 ----------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
-  renderProgressiveMode();
+  renderInstaMode();
 });

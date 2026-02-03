@@ -1,55 +1,15 @@
 "use strict";
 
 // DOM references
-const searchInput = document.querySelector("#search-input");
-const searchBtn = document.querySelector("#generate-btn");
 const imgSection = document.querySelector("#image-container");
 const categoryButtons = document.querySelectorAll(".category");
 
-// Unsplash config
-const UNSPLASH_BASE_URL = "https://api.unsplash.com";
-const UNSPLASH_ACCESS_KEY = "qEJS3_uc9Y5N_fd5ia0YQxM3hkwg7PrjfSphgZ3aJvo";
+// Unsplash config (loaded from config.js)
+const UNSPLASH_BASE_URL = CONFIG.UNSPLASH_BASE_URL;
+const UNSPLASH_ACCESS_KEY = CONFIG.UNSPLASH_ACCESS_KEY;
 
 /* -------------------------------------------------------
-   Helpers
-------------------------------------------------------- */
-
-// Without ImageKit
-function createImageCardWithoutImageKit(photo) {
-  const imgCard = document.createElement("div");
-  imgCard.classList.add("image-card");
-
-  const imgEle = document.createElement("img");
-  const rawUrl = photo.urls.raw;
-  imgEle.src = rawUrl;
-  imgEle.alt = photo.alt_description || "Unsplash image";
-
-  const overlay = document.createElement("div");
-  overlay.classList.add("overlay");
-
-  const photographer = document.createElement("div");
-  photographer.classList.add("photographer");
-
-  const downloadBtn = document.createElement("button");
-  downloadBtn.classList.add("download-btn");
-  downloadBtn.textContent = "⬇️";
-
-  const downloadUrl = photo.links && photo.links.download;
-
-  if (downloadUrl) {
-    downloadBtn.addEventListener("click", () => {
-      window.open(downloadUrl, "_blank");
-    });
-  }
-
-  overlay.append(photographer, downloadBtn);
-  imgCard.append(overlay, imgEle);
-
-  return imgCard;
-}
-
-/* -------------------------------------------------------
-   Added: Network based optimization helpers
+   Network based optimization helpers
    Goal: pick a "quality" value based on user's connection
 ------------------------------------------------------- */
 
