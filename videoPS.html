@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PixelFind Videos</title>
+    <title>MediaLab — Progressive Stream</title>
     <script src="https://unpkg.com/@imagekit/javascript@5.1.0/dist/imagekit.min.js"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -21,68 +21,14 @@
       <div class="nav-spacer"></div>
     </nav>
 
-    <!-- Hero Banner (same component as image page) -->
-    <header class="hero-banner">
-      <div class="hero-content">
-        <h1>Epic Clips For Your Next Story</h1>
-        <p style="margin-top: 12px; font-size: 16px">
-          Explore road trips, city lights and nature scenes ready for your demos
-          and experiments.
-        </p>
-      </div>
-    </header>
-
     <!-- Main Content Area -->
     <main class="main-container">
       <div class="category-bar">
         <button class="category active">Featured</button>
       </div>
 
-      <!-- Main ABR Player (Video.js) -->
-      <!-- <section class="player-section" style="margin-bottom: 24px">
-        <video
-          id="video-player"
-          class="video-js vjs-default-skin main-player"
-          playsinline
-          controls
-          preload="none"
-        ></video>
-      </section> -->
-
       <section id="video-container" class="video-container">
-        <!-- Video cards will be injected here via JS using JSON -->
-        <!-- Each card can act as a "playlist item" that loads into the main player above -->
-
-        <!-- Example static card for reference, remove once JS is wired
-
-        <article class="video-card">
-          <div class="video-wrapper">
-            <video
-              class="video-player"
-              src="videos/driving-trip.mp4"
-              controls
-              playsinline
-              preload="metadata"
-            ></video>
-          </div>
-
-          <div class="video-info">
-            <h2 class="video-title">Trans Siberian Highway Russia</h2>
-            <div class="video-meta">
-              <span>Moscow to Vladivostok</span>
-              <span class="dot">•</span>
-              <span>11 000 km</span>
-              <span class="dot">•</span>
-              <span>0:29</span>
-            </div>
-            <p class="video-description">
-              A cross continent drive through valleys, rivers and endless
-              Siberian landscapes.
-            </p>
-          </div>
-        </article>
-
-        -->
+        <!-- Video cards injected via videoPS.js -->
       </section>
     </main>
 

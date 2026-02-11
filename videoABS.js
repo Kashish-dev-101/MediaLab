@@ -162,6 +162,25 @@ const IK_URL_ENDPOINT = "https://ik.imagekit.io/Kashish12345/app";
 const cardPlayers = new Map();
 
 /* ---------------------------
+   ImageKit Thumbnail URL builder
+---------------------------- */
+
+function buildImageKitThumbnailUrl(video) {
+  const sourceUrl = video.sources?.[0];
+  if (!sourceUrl) return video.thumb;
+
+  const tr = ImageKit.buildTransformationString([
+    { width: 640, startOffset: 5 },
+  ]);
+
+  return ImageKit.buildSrc({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: `/${sourceUrl}/ik-thumbnail.jpg`,
+    queryParameters: { tr },
+  });
+}
+
+/* ---------------------------
    ImageKit HLS URL builder
 ---------------------------- */
 
@@ -275,9 +294,7 @@ function createVideoCard(video, index) {
   videoEl.preload = "none";
   videoEl.id = `card-player-${index}`;
 
-  if (video.thumb) {
-    videoEl.poster = video.thumb;
-  }
+  videoEl.poster = buildImageKitThumbnailUrl(video);
 
   videoWrapper.append(videoEl);
 
