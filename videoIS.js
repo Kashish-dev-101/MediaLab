@@ -156,17 +156,34 @@ const videoObserver = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 /* -------------------------
-   IMAGEKIT URL BUILDER
+   IMAGEKIT URL BUILDERS
 ----------------------------*/
 function buildImageKitProgressiveUrl(video) {
   const sourceUrl = video.sources[0];
   if (!sourceUrl) return sourceUrl;
 
-  const tr = ImageKit.buildTransformationString([{ width: 1280, height: 720 }]);
+  const tr = ImageKit.buildTransformationString([
+    { width: 720, height: 900, startOffset: 5, duration: 12 },
+  ]);
 
   return ImageKit.buildSrc({
     urlEndpoint: IK_URL_ENDPOINT,
     src: `/${sourceUrl}`,
+    queryParameters: { tr },
+  });
+}
+
+function buildImageKitThumbnailUrl(video) {
+  const sourceUrl = video.sources[0];
+  if (!sourceUrl) return video.thumb;
+
+  const tr = ImageKit.buildTransformationString([
+    { width: 720, startOffset: 5 },
+  ]);
+
+  return ImageKit.buildSrc({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: `/${sourceUrl}/ik-thumbnail.jpg`,
     queryParameters: { tr },
   });
 }
@@ -191,7 +208,7 @@ function createInstaCard(video) {
 
   videoEl.src = buildImageKitProgressiveUrl(video);
 
-  if (video.thumb) videoEl.poster = video.thumb;
+  videoEl.poster = buildImageKitThumbnailUrl(video);
 
   // Observe this video for autoplay
   videoObserver.observe(videoEl);

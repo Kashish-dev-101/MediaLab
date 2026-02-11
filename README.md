@@ -26,7 +26,9 @@ A comprehensive demo application showcasing modern image optimization and video 
 ### Video Streaming
 - **Progressive streaming** - Standard MP4 delivery with fixed resolution
 - **Adaptive bitrate streaming (HLS)** - Dynamic quality switching based on bandwidth
-- **InstaStream** - Instagram-style autoplay on scroll using IntersectionObserver
+- **InstaStream** - Instagram Reels-style autoplay on scroll using IntersectionObserver
+- **Video trimming** - Short clips created on-the-fly via ImageKit's `startOffset` and `duration` transformations
+- **Video thumbnails** - Poster images extracted from video frames via ImageKit's `/ik-thumbnail.jpg` path
 
 ---
 
@@ -37,7 +39,7 @@ A comprehensive demo application showcasing modern image optimization and video 
 | **Image Optimization** | Photo gallery with network-aware loading | ImageKit responsive images, IntersectionObserver |
 | **Progressive Stream** | Fixed-resolution video delivery | Native HTML5 video, ImageKit transformations |
 | **Adaptive Stream** | HLS streaming with quality selector | Video.js, HLS.js, ImageKit ABS |
-| **InstaStream** | Autoplay videos on scroll | IntersectionObserver, native video |
+| **InstaStream** | Reels-style feed with trimmed clips, autoplay on scroll | IntersectionObserver, ImageKit trim, native video |
 
 ---
 
@@ -215,8 +217,18 @@ videojs(videoEl, {
 
 ### InstaStream (`videoIS.js`)
 
-Instagram-style autoplay using IntersectionObserver.
+Instagram Reels-style vertical feed with trimmed short clips and autoplay using IntersectionObserver.
 
+#### Video Trimming
+Full-length videos are trimmed to short looping clips on-the-fly using ImageKit's `startOffset` and `duration` transformations — no separate video files needed.
+
+```javascript
+const tr = ImageKit.buildTransformationString([
+  { width: 720, height: 900, startOffset: 5, duration: 12 },
+]);
+```
+
+#### Autoplay on Scroll
 ```javascript
 const videoObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
@@ -238,9 +250,36 @@ videoEl.playsInline = true; // iOS compatibility
 ```
 
 **Resources:**
+- [ImageKit: Trim Videos](https://imagekit.io/docs/trim-videos)
 - [MDN: Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
 - [MDN: Autoplay guide](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide)
 - [MDN: HTMLMediaElement.play()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play)
+
+---
+
+### Video Thumbnails (all video pages)
+
+Poster images are generated from the video itself using ImageKit's thumbnail extraction, instead of separate static images.
+
+```javascript
+function buildImageKitThumbnailUrl(video) {
+  const sourceUrl = video.sources[0];
+  const tr = ImageKit.buildTransformationString([
+    { width: 640, startOffset: 5 },
+  ]);
+
+  return ImageKit.buildSrc({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: `/${sourceUrl}/ik-thumbnail.jpg`,
+    queryParameters: { tr },
+  });
+}
+```
+
+Appending `/ik-thumbnail.jpg` to any video path extracts a frame as a JPEG. The `startOffset` parameter controls which frame to capture.
+
+**Resources:**
+- [ImageKit: Create Video Thumbnails](https://imagekit.io/docs/create-video-thumbnails)
 
 ---
 
@@ -258,6 +297,8 @@ Used for image/video transformations and delivery. Features used:
 | Image Transformations | [ImageKit: Transformations](https://imagekit.io/docs/transformations) |
 | Responsive Images | [ImageKit: Responsive Images](https://imagekit.io/docs/responsive-images) |
 | Video Transformations | [ImageKit: Video Transformation](https://imagekit.io/docs/video-transformation) |
+| Video Trimming | [ImageKit: Trim Videos](https://imagekit.io/docs/trim-videos) |
+| Video Thumbnails | [ImageKit: Video Thumbnails](https://imagekit.io/docs/create-video-thumbnails) |
 | Adaptive Streaming | [ImageKit: ABS](https://imagekit.io/docs/adaptive-bitrate-streaming) |
 | JavaScript SDK | [ImageKit: JS SDK](https://imagekit.io/docs/integration/javascript) |
 

@@ -178,6 +178,21 @@ function buildImageKitProgressiveUrl(video) {
   });
 }
 
+function buildImageKitThumbnailUrl(video) {
+  const sourceUrl = video.sources[0];
+  if (!sourceUrl) return video.thumb;
+
+  const tr = ImageKit.buildTransformationString([
+    { width: 640, startOffset: 5 },
+  ]);
+
+  return ImageKit.buildSrc({
+    urlEndpoint: IK_URL_ENDPOINT,
+    src: `/${sourceUrl}/ik-thumbnail.jpg`,
+    queryParameters: { tr },
+  });
+}
+
 /* -------------------------
    CARD CREATION (PROGRESSIVE)
 ----------------------------*/
@@ -195,7 +210,7 @@ function createProgressiveCard(video) {
 
   videoEl.src = buildImageKitProgressiveUrl(video);
 
-  if (video.thumb) videoEl.poster = video.thumb;
+  videoEl.poster = buildImageKitThumbnailUrl(video);
 
   wrapper.append(videoEl);
   card.append(wrapper, buildInfo(video));
